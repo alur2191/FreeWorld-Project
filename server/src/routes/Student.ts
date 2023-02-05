@@ -4,8 +4,8 @@ import { Schemas, ValidateJoi } from "../middleware/Joi";
 
 const router = express.Router();
 
-router.get("/get/", controller.readAll);
-router.get('/get/:id', controller.getStudent);
+router.get("/get/", controller.getAll);
+router.get("/get/:id", controller.getStudent);
 router.post(
   "/create/",
   ValidateJoi(Schemas.student.create),

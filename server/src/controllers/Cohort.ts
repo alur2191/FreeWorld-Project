@@ -3,6 +3,9 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
+// @route    GET cohorts/get
+// @desc     Get all cohorts
+// @access   Public
 const readAll = async (req: Request, res: Response) => {
   try {
     const cohortData = await db.query("select * from cohorts");
@@ -20,6 +23,9 @@ const readAll = async (req: Request, res: Response) => {
   }
 };
 
+// @route    POST cohorts/create
+// @desc     Create a cohort
+// @access   Public
 const createCohort = async (req: Request, res: Response) => {
   try {
     const results = await db.query(

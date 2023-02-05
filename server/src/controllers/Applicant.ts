@@ -3,7 +3,10 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
-const readAll = async (req: Request, res: Response) => {
+// @route    GET applicants/get
+// @desc     Get all applicants
+// @access   Public
+const getAll = async (req: Request, res: Response) => {
   try {
     const applicantData = await db.query("select * from applicants");
 
@@ -20,6 +23,32 @@ const readAll = async (req: Request, res: Response) => {
   }
 };
 
+// @route    GET applicants/get/:id
+// @desc     Get an applicant by ID
+// @access   Public
+const getApplicant = async (req: Request, res: Response) => {
+  try {
+    console.log(req.params.id);
+    const applicants = await db.query(
+      "select * from applicants where id = $1",
+      [req.params.id]
+    );
+
+    res.status(200).json({
+      status: "succes",
+      data: {
+        applicant: applicants.rows[0],
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error! Unable to process request." });
+  }
+};
+
+// @route    POST applicants/create
+// @desc     Create an applicant
+// @access   Public
 const createApplicant = async (req: Request, res: Response) => {
   try {
     const results = await db.query(
@@ -44,24 +73,4 @@ const createApplicant = async (req: Request, res: Response) => {
   }
 };
 
-const getApplicant = async (req: Request, res: Response) => {
-  try {
-    console.log(req.params.id)
-    const applicants = await db.query(
-      "select * from applicants where id = $1",
-      [req.params.id]
-    );
-    
-    res.status(200).json({
-      status: "succes",
-      data: {
-        applicant: applicants.rows[0],
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Error! Unable to process request." });
-  }
-}
-
-export default { readAll, createApplicant, getApplicant }
+export default { getAll, createApplicant, getApplicant };
