@@ -20,4 +20,12 @@ export const Schemas = {
       max_hours: Joi.number().required(),
     }),
   },
+  applicant: {
+    create: Joi.object({
+      cohort_id: Joi.number().required(),
+      name: Joi.string().required().max(40),
+      hours_needed: Joi.number().required(),
+      earnings_potential: Joi.number().required(),
+    }),
+  },
 };
