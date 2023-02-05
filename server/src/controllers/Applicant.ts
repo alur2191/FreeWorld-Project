@@ -44,8 +44,6 @@ const createApplicant = async (req: Request, res: Response) => {
   }
 };
 
-
-
 const getApplicant = async (req: Request, res: Response) => {
   try {
     console.log(req.params.id)
@@ -62,6 +60,7 @@ const getApplicant = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: "Error! Unable to process request." });
   }
 }
 

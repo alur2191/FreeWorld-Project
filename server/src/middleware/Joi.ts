@@ -28,4 +28,11 @@ export const Schemas = {
       earnings_potential: Joi.number().required(),
     }),
   },
+  student: {
+    create: Joi.object({
+      cohort_id: Joi.number().required(),
+      applicant_id: Joi.number().required(),
+      name: Joi.string().required()
+    })
+  }
 };
