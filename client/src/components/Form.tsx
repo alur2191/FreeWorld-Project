@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { CLIENT_RENEG_LIMIT } from "tls";
+import React, { useContext, useEffect, useState } from "react";
+import { CohortContext } from "../context/CohortContext";
 import styles from "./Form.module.scss";
 
 interface IFormField {
@@ -7,9 +7,10 @@ interface IFormField {
 }
 
 const Form = () => {
+  const { setCohorts } = useContext(CohortContext);
   const [formFields, setFormFields] = useState<IFormField[]>([
     {
-      student_name: null,
+      applicant_name: null,
       hours_needed: null,
       earnings_potential: null,
     },
@@ -17,6 +18,8 @@ const Form = () => {
 
   useEffect(() => {
     console.log("effect", formFields);
+    setCohorts({max_earnings: 1000,
+      students: [{ student_name: "hello world", earnings_potential: 1000 }]})
   }, [formFields]);
 
   // handle click event of the Add button
@@ -24,7 +27,7 @@ const Form = () => {
     setFormFields([
       ...formFields,
       {
-        student_name: null,
+        applicant_name: null,
         hours_needed: null,
         earnings_potential: null,
       },
@@ -61,25 +64,25 @@ const Form = () => {
           <input type="text" id="max_hours" />
         </div>
         <div className={styles.formContainer}>
-          <label htmlFor="max_students">
+          <label htmlFor="max_applicants">
             Number of Students for Consideration
           </label>
-          <input type="text" id="max_students" />
+          <input type="text" id="max_applicants" />
         </div>
         {formFields.map((field, i) => (
-          <div className={styles.studentRow} key={field.id}>
+          <div className={styles.applicantRow} key={field.id}>
             <span>{`#${i + 1}`}</span>
-            <div className={styles.studentField}>
-              <label htmlFor={`studentName${i}`}>Student Name</label>
+            <div className={styles.applicantField}>
+              <label htmlFor={`applicantName${i}`}>Student Name</label>
               <input
                 type="text"
-                id={`studentName${i}`}
-                name="student_name"
-                value={field.student_name ? field.student_name : ""}
+                id={`applicantName${i}`}
+                name="applicant_name"
+                value={field.applicant_name ? field.applicant_name : ""}
                 onChange={(e) => handleInputChange(e, i)}
               />
             </div>
-            <div className={styles.studentField}>
+            <div className={styles.applicantField}>
               <label htmlFor={`hoursNeeded${i}`}>Hours Needed</label>
               <input
                 type="number"
@@ -89,7 +92,7 @@ const Form = () => {
                 onChange={(e) => handleInputChange(e, i)}
               />
             </div>
-            <div className={styles.studentField}>
+            <div className={styles.applicantField}>
               <label htmlFor={`earningsPotential${i}`}>
                 Earnings Potential
               </label>

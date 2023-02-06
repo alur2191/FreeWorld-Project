@@ -1,10 +1,15 @@
-import Form from './components/Form'
+import CohortInfo from "./components/Cohort";
+import Form from "./components/Form";
+import { CohortContextProvider } from "./context/CohortContext";
 
 function App() {
   return (
-    <div className="App">
-      <Form />
-    </div>
+    <CohortContextProvider>
+      <div className="App">
+        <Form />
+        <CohortInfo />
+      </div>
+    </CohortContextProvider>
   );
 }
 
