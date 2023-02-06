@@ -1,10 +1,15 @@
 @import "../styles/variables.scss";
+@import '../styles/globals.scss';
 
 .form {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: $space-xxl;
 
+      @include for-phone-only {
+            margin-top: $space-xl;
+      }
       h4 {
             margin-bottom: $space-xs;
       }
@@ -26,10 +31,23 @@
             > span {
                   margin-right: $space-xxs;
             }
+
+            @include for-phone-only {
+                  flex-direction: column;
+                  height: 100%;
+                  width: 90%;
+            }
             .applicantField {
                   display: flex;
                   flex-direction: column;
                   margin-right: $space-lg;
+
+                  @include for-phone-only {
+                        flex-direction: column;
+                        width: 90%;
+                        margin-bottom: $space-sm;
+                        margin-right: 0;
+                  }
             }
             :last-child {
                   margin-right: 0px;

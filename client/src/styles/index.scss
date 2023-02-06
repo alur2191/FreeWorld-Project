@@ -81,6 +81,12 @@ a {
 	color: $textBlack;
 }
 
+input {
+	@include for-phone-only {
+		max-width: 200px;
+	}
+}
+
 input[type="number"] {
 	width: 60px;
 }
@@ -91,8 +97,6 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 #root {
-	height: 100vh;
-	width: 100vw;
 }
 
 .App {
@@ -100,4 +104,9 @@ input[type="number"]::-webkit-outer-spin-button {
 	justify-content: center;
 	align-items: center;
 	height: 100%;
+}
+
+.navbar {
+	background-color: #131314;
+	height: 80px;
 }

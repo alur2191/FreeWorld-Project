@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import { CohortContext } from "../context/CohortContext";
 import styles from "./Form.module.scss";
+import FreeWorld from "../apis/FreeWorld";
 
 interface Applicant {
-  applicant_name: string | null;
+  name: string | null;
   hours_needed: number | null;
   earnings_potential: number | null;
 }
@@ -18,7 +19,7 @@ const Form = () => {
 
   const [formFields, setFormFields] = useState<any>([
     {
-      applicant_name: null,
+      name: null,
       hours_needed: null,
       earnings_potential: null,
     },
@@ -28,7 +29,7 @@ const Form = () => {
     setFormFields([
       ...formFields,
       {
-        applicant_name: null,
+        name: null,
         hours_needed: null,
         earnings_potential: null,
       },
@@ -78,15 +79,16 @@ const Form = () => {
         let totalTime = 0;
         let studentList: any = [];
         const rightSide = applicants.slice(x, x + studentNumber - leftCount);
+
         const leftSum = leftSide.reduce((n, curr, y) => {
           totalTime += Number(leftSide[y].hours_needed);
-          studentList.push(leftSide[y].applicant_name);
+          studentList.push(leftSide[y].name);
           return n + Number(curr.earnings_potential);
         }, 0);
-        
+
         const rightSum = rightSide.reduce((n, curr, y) => {
           totalTime += Number(rightSide[y].hours_needed);
-          studentList.push(rightSide[y].applicant_name);
+          studentList.push(rightSide[y].name);
           return n + Number(curr.earnings_potential);
         }, 0);
 
@@ -105,9 +107,42 @@ const Form = () => {
     return max;
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await FreeWorld.post(`/cohorts/create`, {
+        max_earnings: currentMaxEarnings,
+        max_hours: maxCreditHours,
+        considered: maxStudentsConsidered,
+      }).then(async (res) => {
+        if (res.status == 201) {
+          const { id: cohort_id } = res.data.data.cohort;
+          try {
+            await FreeWorld.post(`/applicants/create`, {
+              cohort_id,
+              applicants: [...formFields],
+            }).then(async (res) => {
+              const { id: applicant_id } = res.data.data.applicant;
+              if (res.status === 201) {
+                const studentsList: any = [];
+
+                passingStudents?.map((student) =>
+                  studentsList.push({ cohort_id, applicant_id, name: student })
+                );
+                try {
+                  await FreeWorld.post(`/students/create`, {
+                    studentsList,
+                  });
+                } catch (err) {}
+              }
+            });
+          } catch (err) {}
+        }
+      });
+    } catch (err) {}
+  };
   return (
-    <div className="applicant-form">
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.formContainer}>
           <label htmlFor="max_hours">Maximum Credit Hours</label>
           <input
@@ -135,8 +170,8 @@ const Form = () => {
               <input
                 type="text"
                 id={`applicantName${i}`}
-                name="applicant_name"
-                value={field.applicant_name ? field.applicant_name : ""}
+                name="name"
+                value={field.name ? field.name : ""}
                 onChange={(e) => handleInputChange(e, i)}
               />
             </div>
@@ -174,14 +209,7 @@ const Form = () => {
           </div>
         ))}
         <div className={styles.buttons}>
-          <button
-            type="button"
-            onClick={() =>
-              calculate(formFields, maxCreditHours, maxStudentsConsidered)
-            }
-          >
-            Calculate
-          </button>
+          <input type="submit" />
           <button type="button" onClick={handleAddField}>
             Add applicant
           </button>
@@ -200,7 +228,6 @@ const Form = () => {
           </p>
         </div>
       </form>
-    </div>
   );
 };
 
