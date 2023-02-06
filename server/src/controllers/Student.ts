@@ -3,6 +3,12 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
+interface Student {
+  name: string;
+  cohort_id: number;
+  applicant_id: number;
+}
+
 // @route    GET students/get
 // @desc     Get all students
 // @access   Public
@@ -28,7 +34,6 @@ const getAll = async (req: Request, res: Response) => {
 // @access   Public
 const getStudent = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.id);
     const students = await db.query("select * from students where id = $1", [
       req.params.id,
     ]);
@@ -49,10 +54,15 @@ const getStudent = async (req: Request, res: Response) => {
 // @desc     Create a student
 // @access   Public
 const createStudent = async (req: Request, res: Response) => {
+  const { studentsList: students} = req.body;
   try {
     const results = await db.query(
-      "INSERT INTO students (cohort_id, applicant_id, name) values ($1, $2, $3) returning *",
-      [req.body.cohort_id, req.body.applicant_id, req.body.name]
+      `INSERT INTO students (cohort_id, applicant_id, name) values ${students
+        .map(
+          (student: Student) =>
+            `(${student.cohort_id}, ${student.applicant_id}, '${student.name}')`
+        )
+        .join(",")} returning *`
     );
 
     res.status(201).json({

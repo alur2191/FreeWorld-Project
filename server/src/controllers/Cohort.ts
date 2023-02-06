@@ -29,8 +29,8 @@ const readAll = async (req: Request, res: Response) => {
 const createCohort = async (req: Request, res: Response) => {
   try {
     const results = await db.query(
-      "INSERT INTO cohorts (max_hours) values ($1) returning *",
-      [req.body.max_hours]
+      "INSERT INTO cohorts (max_earnings, max_hours, considered) values ($1, $2, $3) returning *",
+      [req.body.max_earnings, req.body.max_hours, req.body.considered]
     );
 
     res.status(201).json({

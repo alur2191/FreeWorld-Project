@@ -3,6 +3,11 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
+interface Applicant {
+  name: string;
+  earnings_potential: number;
+  hours_needed: number;
+}
 // @route    GET applicants/get
 // @desc     Get all applicants
 // @access   Public
@@ -28,7 +33,6 @@ const getAll = async (req: Request, res: Response) => {
 // @access   Public
 const getApplicant = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.id);
     const applicants = await db.query(
       "select * from applicants where id = $1",
       [req.params.id]
@@ -50,15 +54,17 @@ const getApplicant = async (req: Request, res: Response) => {
 // @desc     Create an applicant
 // @access   Public
 const createApplicant = async (req: Request, res: Response) => {
+  const { cohort_id, applicants } = req.body;
+
   try {
     const results = await db.query(
-      "INSERT INTO applicants (cohort_id, name, earnings_potential, hours_needed) values ($1, $2, $3, $4) returning *",
-      [
-        req.body.cohort_id,
-        req.body.name,
-        req.body.earnings_potential,
-        req.body.hours_needed,
-      ]
+      `INSERT INTO applicants ( cohort_id, name, earnings_potential, hours_needed) 
+      values ${applicants
+        .map(
+          (applicant: Applicant) =>
+            `(${cohort_id}, '${applicant.name}', ${applicant.earnings_potential}, ${applicant.hours_needed})`
+        )
+        .join(",")} returning *`
     );
 
     res.status(201).json({
