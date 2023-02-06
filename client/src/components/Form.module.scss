@@ -1,0 +1,39 @@
+@import "../styles/variables.scss";
+
+.form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .formContainer > label {
+            margin-right: 10px;
+      }
+      .studentRow {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: flex-end;
+            > span {
+                  margin-right: 10px;
+            }
+            .studentField {
+                  display: flex;
+                  flex-direction: column;
+                  margin-right: 10px;
+            }
+            :last-child {
+                  margin-right: 0px;
+            }
+            .deleteButton {
+                  height: 30px;
+            }
+      }
+      .studentRow:nth-of-type(odd){
+            background-color: $udGrey;
+      }
+      > div {
+            margin-bottom: 15px;
+      }
+      > button {
+            width: 100px;
+      }
+}
+
