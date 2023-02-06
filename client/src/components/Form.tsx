@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CohortContext } from "../context/CohortContext";
 import styles from "./Form.module.scss";
 import FreeWorld from "../apis/FreeWorld";
@@ -16,7 +16,6 @@ const Form = () => {
   const [maxCreditHours, setMaxCreditHours] = useState<number>(0);
   const [maxStudentsConsidered, setMaxStudentsConsidered] = useState<number>(0);
   const [passingStudents, setPassingStudents] = useState<string[]>();
-
   const [formFields, setFormFields] = useState<any>([
     {
       name: null,
@@ -24,6 +23,7 @@ const Form = () => {
       earnings_potential: null,
     },
   ]);
+
   // handle click event of the Add button
   const handleAddField = () => {
     setFormFields([
@@ -141,6 +141,18 @@ const Form = () => {
       });
     } catch (err) {}
   };
+
+  const handleClear = () => {
+    setMaxStudentsConsidered(0)
+    setMaxCreditHours(0)
+    setFormFields([
+      {
+        name: null,
+        hours_needed: null,
+        earnings_potential: null,
+      },
+    ]);
+  }
   return (
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.formContainer}>
@@ -148,6 +160,7 @@ const Form = () => {
           <input
             type="number"
             id="max_hours"
+            value={maxCreditHours}
             onChange={(e) => setMaxCreditHours(Number(e.target.value))}
           />
         </div>
@@ -158,6 +171,7 @@ const Form = () => {
           <input
             type="number"
             id="max_applicants"
+            value={maxStudentsConsidered}
             onChange={(e) => setMaxStudentsConsidered(Number(e.target.value))}
           />
         </div>
@@ -212,6 +226,9 @@ const Form = () => {
           <input type="submit" />
           <button type="button" onClick={handleAddField}>
             Add applicant
+          </button>
+          <button type="button" onClick={handleClear}>
+            Clear
           </button>
         </div>
 
