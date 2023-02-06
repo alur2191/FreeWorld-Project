@@ -3,5 +3,5 @@ CREATE TABLE cohorts (
 	cohort_number BIGSERIAL,
 	max_earnings INTEGER,
 	max_hours SMALLINT NOT NULL,
-	considered SMALLINT
+	considered SMALLINT NOT NULL
 );

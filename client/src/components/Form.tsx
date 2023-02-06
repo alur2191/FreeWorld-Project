@@ -1,27 +1,28 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { CohortContext } from "../context/CohortContext";
 import styles from "./Form.module.scss";
 
-interface IFormField {
-  [p: string]: string | number | null;
+interface Applicant {
+  applicant_name: string | null;
+  hours_needed: number | null;
+  earnings_potential: number | null;
 }
+interface Applicants extends Array<Applicant> {}
 
 const Form = () => {
   const { setCohorts } = useContext(CohortContext);
-  const [formFields, setFormFields] = useState<IFormField[]>([
+  const [currentMaxEarnings, setCurrentMaxEarnings] = useState<number>(0);
+  const [maxCreditHours, setMaxCreditHours] = useState<number>(0);
+  const [maxStudentsConsidered, setMaxStudentsConsidered] = useState<number>(0);
+  const [passingStudents, setPassingStudents] = useState<string[]>();
+
+  const [formFields, setFormFields] = useState<any>([
     {
       applicant_name: null,
       hours_needed: null,
       earnings_potential: null,
     },
   ]);
-
-  useEffect(() => {
-    console.log("effect", formFields);
-    setCohorts({max_earnings: 1000,
-      students: [{ student_name: "hello world", earnings_potential: 1000 }]})
-  }, [formFields]);
-
   // handle click event of the Add button
   const handleAddField = () => {
     setFormFields([
@@ -46,14 +47,62 @@ const Form = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     const fieldList = [...formFields];
     if (value === "") {
       fieldList[index][name] = null;
     } else {
-      fieldList[index][name] = value;
+      type === "number"
+        ? (fieldList[index][name] = Number(value))
+        : (fieldList[index][name] = value);
     }
     setFormFields(fieldList);
+    calculate(formFields, maxCreditHours, maxStudentsConsidered);
+  };
+
+  const calculate = (
+    applicants: Applicants,
+    timeLimit: number,
+    studentNumber: number
+  ) => {
+    let max = null;
+    if (!applicants) return;
+
+    for (let i = 0; i < applicants.length; i++) {
+      let leftCount = i + 1;
+      let leftSide = applicants.slice(0, leftCount);
+
+      for (let x = i + 1; x < applicants.length; x++) {
+        if (studentNumber - leftCount > applicants.length) break;
+
+        let totalTime = 0;
+        let studentList: any = [];
+        const rightSide = applicants.slice(x, x + studentNumber - leftCount);
+        const leftSum = leftSide.reduce((n, curr, y) => {
+          totalTime += Number(leftSide[y].hours_needed);
+          studentList.push(leftSide[y].applicant_name);
+          return n + Number(curr.earnings_potential);
+        }, 0);
+        
+        const rightSum = rightSide.reduce((n, curr, y) => {
+          totalTime += Number(rightSide[y].hours_needed);
+          studentList.push(rightSide[y].applicant_name);
+          return n + Number(curr.earnings_potential);
+        }, 0);
+
+        const totalSum = leftSum + rightSum;
+
+        if (totalTime > timeLimit) continue;
+        if (max == null) {
+          max = totalSum;
+        } else if (totalSum > max) {
+          max = totalSum;
+          setPassingStudents(studentList);
+        }
+      }
+    }
+    setCurrentMaxEarnings(Number(max));
+    return max;
   };
 
   return (
@@ -61,16 +110,25 @@ const Form = () => {
       <form className={styles.form}>
         <div className={styles.formContainer}>
           <label htmlFor="max_hours">Maximum Credit Hours</label>
-          <input type="text" id="max_hours" />
+          <input
+            type="number"
+            id="max_hours"
+            onChange={(e) => setMaxCreditHours(Number(e.target.value))}
+          />
         </div>
         <div className={styles.formContainer}>
           <label htmlFor="max_applicants">
             Number of Students for Consideration
           </label>
-          <input type="text" id="max_applicants" />
+          <input
+            type="number"
+            id="max_applicants"
+            onChange={(e) => setMaxStudentsConsidered(Number(e.target.value))}
+          />
         </div>
-        {formFields.map((field, i) => (
-          <div className={styles.applicantRow} key={field.id}>
+        <h4>Applicants</h4>
+        {formFields.map((field: Applicant, i: number) => (
+          <div className={styles.applicantRow} key={i}>
             <span>{`#${i + 1}`}</span>
             <div className={styles.applicantField}>
               <label htmlFor={`applicantName${i}`}>Student Name</label>
@@ -115,9 +173,32 @@ const Form = () => {
             ) : null}
           </div>
         ))}
-        <button type="button" onClick={handleAddField}>
-          Add field
-        </button>
+        <div className={styles.buttons}>
+          <button
+            type="button"
+            onClick={() =>
+              calculate(formFields, maxCreditHours, maxStudentsConsidered)
+            }
+          >
+            Calculate
+          </button>
+          <button type="button" onClick={handleAddField}>
+            Add applicant
+          </button>
+        </div>
+
+        <div>
+          <p>
+            <strong>Calculated Max Earnings: </strong>
+            {currentMaxEarnings ? "$" + currentMaxEarnings : "N/A"}
+          </p>
+          <p>
+            <strong>Passing Students: </strong>
+            {passingStudents
+              ? passingStudents.map((student) => student + " ")
+              : "N/A"}
+          </p>
+        </div>
       </form>
     </div>
   );

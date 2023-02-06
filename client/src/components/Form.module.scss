@@ -4,36 +4,47 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      .formContainer > label {
-            margin-right: 10px;
+
+      h4 {
+            margin-bottom: $space-xs;
       }
-      .studentRow {
+
+      > div {
+            margin-bottom: $space-xs;
+      }
+      > button {
+            width: 100px;
+      }
+
+      .formContainer > label {
+            margin-right: $space-xxs;
+      }
+      .applicantRow {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: $space-md;
             align-items: flex-end;
             > span {
-                  margin-right: 10px;
+                  margin-right: $space-xxs;
             }
-            .studentField {
+            .applicantField {
                   display: flex;
                   flex-direction: column;
-                  margin-right: 10px;
+                  margin-right: $space-lg;
             }
             :last-child {
                   margin-right: 0px;
             }
             .deleteButton {
-                  height: 30px;
+                  height: $space-lg;
             }
       }
-      .studentRow:nth-of-type(odd){
+      .applicantRow:nth-of-type(odd){
             background-color: $udGrey;
       }
-      > div {
-            margin-bottom: 15px;
-      }
-      > button {
-            width: 100px;
+
+      .buttons {
+            display: flex;
+            gap: 20px
       }
 }
 

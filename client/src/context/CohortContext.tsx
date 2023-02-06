@@ -32,9 +32,6 @@ const CohortContextProvider = (props: Props) => {
     students: [{ student_name: null, earnings_potential: 0 }],
   });
 
-  const addCohorts = (newCohort: Cohort) => {
-    setCohorts({ ...cohorts, ...newCohort });
-  };
   return (
     <CohortContext.Provider
       value={{
